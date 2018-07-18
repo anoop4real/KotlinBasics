@@ -15,13 +15,14 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-        variables()
+        //variables()
         //nullSafetyFun()
         //conditions()
         //loops()
         //typeCheck("Hello","Hello b")
         //collections()
         //setSample()
+        nullableTest()
 
 //        val vehicle = Vehicle("red",4)
 //        Log.i("Kotlin", "Vehicle color is ${vehicle.color}")
@@ -110,11 +111,47 @@ class MainActivity : AppCompatActivity() {
         val mymap = emptyMap<String,String>() // empty readonly map
         val anothermymap = mapOf<String, String>() // another empty readonly map
         val contentMap = mapOf("Don" to "First Name","Bosco" to "LastName")
-        val cmutableMap = mutableMapOf("First Name" to "Don" ,"LastName" to "Bosco")
-        cmutableMap.put("David","Batista")
-        cmutableMap.filter { it.value == "Don" }
+        val mutableMap = mutableMapOf("First Name" to "Don" ,"LastName" to "Bosco")
+        mutableMap.put("name","Batista")
+        mutableMap.filter { it.value == "Don" }
     }
 
+    fun nullableTest(){
+
+        var str:String? = null
+
+        //str = "David"
+
+        val hello = str?.let { sayHello(it) }?: "Undefined"
+
+        Log.i("Kotlin",hello)
+
+    }
+
+    fun sayHello(name: String): String{
+
+        return "Hello $name"
+    }
+
+    fun getColorFor(color: String): Int {
+            return when (color) {
+            "Red" -> 0
+            "Green" -> 1
+            "Blue" -> 2
+            else -> throw IllegalArgumentException("Invalid color param value")
+        }
+    }
+    fun helloColor(){
+
+        val color = try {
+            getColorFor("Red")
+        } catch (e: IllegalArgumentException){
+
+            Log.i("Kotlin",e.localizedMessage)
+        }
+
+
+    }
 
     fun conditions(){
 
@@ -522,6 +559,28 @@ class Generic<E>(t:E){
 
 
 }
+class Bus {
+    fun startBus(){
+
+        Log.i("Kotlin","Started")
+    }
+    fun stopBus(){
+        Log.i("Kotlin","Stopped")
+
+    }
+
+    fun turnRight(){
+        Log.i("Kotlin","Turning Right")
+    }
+    fun turnLeft(){
+        Log.i("Kotlin","Turning Left")
+    }
+}
+
+val myBus = Bus()
+
+
+
 
 
 
