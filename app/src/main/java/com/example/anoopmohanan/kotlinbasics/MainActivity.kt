@@ -5,6 +5,7 @@ import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
 import android.widget.Toast
+import java.lang.Math.random
 import java.time.Duration
 import java.util.*
 import kotlin.collections.ArrayList
@@ -15,6 +16,13 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
+        // random1 has a value assigned at compile time, and the value never changes when the variable is accessed.
+        // random2 has a lambda assigned at compile time, and the lambda is executed every time the variable is referenced, returning a different value.
+        val random = random()
+        val random2 = { random() }
+
+        //createSpice()
+
         //variables()
         //nullSafetyFun()
         //conditions()
@@ -22,7 +30,14 @@ class MainActivity : AppCompatActivity() {
         //typeCheck("Hello","Hello b")
         //collections()
         //setSample()
-        nullableTest()
+        //nullableTest()
+        whatShouldIDoToday("sad")
+
+        var rev = reverseName("hello") { data ->
+            data.reversed()
+
+        }
+        val(name:String, age: Int) = Mydata("Don",45)
 
 //        val vehicle = Vehicle("red",4)
 //        Log.i("Kotlin", "Vehicle color is ${vehicle.color}")
@@ -58,15 +73,16 @@ class MainActivity : AppCompatActivity() {
 
     // Variables
 
-    fun variables(){
+    fun variables() {
 
         // Mutable
         // Kotlin infers the type
         var text = "hello"  // Inferred as String
-        Log.i("Kotlin",text)
+        Log.i("Kotlin", text)
         var number = 5.45   // Inferred as Double
 
-        var number2:Float = 5.45f// Gives error as by default decimals are interpretted as double. To fix it you need to append "f"
+        var number2: Float =
+            5.45f// Gives error as by default decimals are interpretted as double. To fix it you need to append "f"
 
         // Explicit Typing
         var message: String = "hello"
@@ -74,7 +90,7 @@ class MainActivity : AppCompatActivity() {
         // Modify
         text = "I am modified"
 
-        Log.i("Kotlin",text)
+        Log.i("Kotlin", text)
 
         // Constants
 
@@ -82,8 +98,118 @@ class MainActivity : AppCompatActivity() {
 
         //constantText = "I am modified"  // Gives error
     }
+    fun pairs(){
+        // Pairs
 
-    fun nullSafetyFun(){
+        val weapn = "Gun" to "Fire"
+        print(weapn.first)
+        print(weapn.second)
+
+        val (weaponName, use) = weapn
+        print(weaponName)
+        print(use)
+    }
+
+    fun giveMeAWeapon():Pair<String, String>{
+
+        val weapn = "Gun" to "Fire"
+
+        return weapn
+    }
+
+
+    fun whatShouldIDoToday(mood: String, weather: String = "Sunny", temperature: Int = 24): String {
+
+        return when {
+            mood == "happy" && weather == "Sunny" -> "go for a walk"
+            mood == "happy" && weather == "rainy" -> "take an umbrella"
+            mood == "sad" && weather == "rainy" && temperature == 0 -> "stay in bed"
+            temperature > 35 -> "go swimming"
+            else -> "Stay home and read."
+        }
+
+    }
+
+    fun filters() {
+        var listOfNames = listOf("David", "Marx", "Kuttappan", "Don", "Maju")
+
+        print(listOfNames.filter { it[0] == 'D' })
+
+        val filtered = listOfNames.asSequence().filter { it[0] == 'D' }
+
+        print(filtered)
+        print(filtered.toList())
+
+        val lazyMap = listOfNames.asSequence().map {
+            print("map: $it")
+            it
+        }
+        print(lazyMap)
+        print(lazyMap.toList())
+
+        val spices =
+            listOf("curry", "pepper", "cayenne", "ginger", "red curry", "green curry", "red pepper")
+
+        val filteredCurries = spices.filter { it.contains("curry") }.sortedBy { it.length }
+        print(filteredCurries)
+
+        val filteredSpices =
+            spices.filter { !it.contains("curry") && it.startsWith('c') && it.endsWith('e') }
+        val filteredSpices2 =
+            spices.filter { !it.contains("curry") && it.first() == 'c' && it.last() == 'e' }
+        print(filteredSpices)
+        print(filteredSpices2)
+        val change = { isDirty: Boolean ->
+            if (isDirty) {
+                print("dirty")
+            } else {
+                print("not dirty")
+            }
+        }
+        change(true)
+
+    }
+
+    // Data Classes
+
+    data class Mydata(val name: String, val age:Int){
+
+    }
+
+    // Function which takes lambda as parameter
+
+    fun reverseName(name: String, reverser: (String) -> String): String {
+
+        return reverser(name)
+    }
+
+
+    fun multilineStrings() {
+
+        val multString = """
+            This is fulltime
+            multiline string
+            """
+    }
+
+    val rollDiceA = { Random().nextInt(12) + 1}
+
+    val rollDice = { sides: Int ->
+        Random().nextInt(sides) + 1
+    }
+
+    val rollDice0 = { sides: Int ->
+        if (sides == 0) 0
+        else Random().nextInt(sides) + 1
+    }
+
+    val rollDice2: (Int) -> Int = { sides ->
+        if (sides == 0) 0
+        else Random().nextInt(sides) + 1
+    }
+
+
+    fun nullSafetyFun() {
 
         // System has a possibility to identify which value can be null or not
 
@@ -92,7 +218,7 @@ class MainActivity : AppCompatActivity() {
         var text2: String? = null // This means text2 can hold null values
 
         // To safely access use ?
-        Log.i("Kotlin",text2?.length.toString())
+        Log.i("Kotlin", text2?.length.toString())
 
         // If you are really sure that text2 has values, then read the value with force using !!
         var text3: String? = null
@@ -103,71 +229,73 @@ class MainActivity : AppCompatActivity() {
         // If the expression on the left of ?: is valid, then return it else send the value on right hand side
 
         val len = text2?.length ?: 0
-        Log.i("Kotlin",len.toString())
+        Log.i("Kotlin", len.toString())
 
     }
-    fun maps(){
 
-        val mymap = emptyMap<String,String>() // empty readonly map
+    fun maps() {
+
+        val mymap = emptyMap<String, String>() // empty readonly map
         val anothermymap = mapOf<String, String>() // another empty readonly map
-        val contentMap = mapOf("Don" to "First Name","Bosco" to "LastName")
-        val mutableMap = mutableMapOf("First Name" to "Don" ,"LastName" to "Bosco")
-        mutableMap.put("name","Batista")
+        val contentMap = mapOf("Don" to "First Name", "Bosco" to "LastName")
+        val mutableMap = mutableMapOf("First Name" to "Don", "LastName" to "Bosco")
+        mutableMap.put("name", "Batista")
         mutableMap.filter { it.value == "Don" }
     }
 
-    fun nullableTest(){
+    fun nullableTest() {
 
-        var str:String? = null
+        var str: String? = null
 
         //str = "David"
 
-        val hello = str?.let { sayHello(it) }?: "Undefined"
+        val hello = str?.let { sayHello(it) } ?: "Undefined"
 
-        Log.i("Kotlin",hello)
+        Log.i("Kotlin", hello)
 
     }
 
-    fun sayHello(name: String): String{
+    fun sayHello(name: String): String {
 
         return "Hello $name"
     }
 
     fun getColorFor(color: String): Int {
-            return when (color) {
+        return when (color) {
             "Red" -> 0
             "Green" -> 1
             "Blue" -> 2
             else -> throw IllegalArgumentException("Invalid color param value")
         }
     }
-    fun helloColor(){
+
+    fun helloColor() {
 
         val color = try {
             getColorFor("Red")
-        } catch (e: IllegalArgumentException){
+        } catch (e: IllegalArgumentException) {
 
-            Log.i("Kotlin",e.localizedMessage)
+            Log.i("Kotlin", e.localizedMessage)
         }
 
 
     }
 
-    fun conditions(){
+    fun conditions() {
 
         // IF
 
         val threshold = 200
 
-        if (threshold < 100){
+        if (threshold < 100) {
 
-            Log.i("Kotlin","its good")
+            Log.i("Kotlin", "its good")
             println("its good")
-        }else if (threshold > 100){
-            Log.i("Kotlin","need to worry")
+        } else if (threshold > 100) {
+            Log.i("Kotlin", "need to worry")
             println("need to worry")
-        }else if (threshold > 200){
-            Log.i("Kotlin","reached maximum")
+        } else if (threshold > 200) {
+            Log.i("Kotlin", "reached maximum")
             println("reached maximum")
         }
 
@@ -175,68 +303,68 @@ class MainActivity : AppCompatActivity() {
 
         val state: Int = 1
 
-        when (state){
+        when (state) {
 
-            1 ->  Log.i("Kotlin","State is Running.")
+            1 -> Log.i("Kotlin", "State is Running.")
             2 -> {
                 // if there is multiple lines, use curly braces
-                Log.i("Kotlin","State is Stopped.")
+                Log.i("Kotlin", "State is Stopped.")
             }
         // Any unsatisfied state
-            else -> Log.i("Kotlin","State is Unknown.")
+            else -> Log.i("Kotlin", "State is Unknown.")
 
         }
     }
 
-    fun loops(){
+    fun loops() {
 
         // for loop
         var total = 0
 
         // Loop numbers 1 to 5, find their sum
-        for (i in 1..5){
+        for (i in 1..5) {
 
-            Log.i("Kotlin","$i")
+            Log.i("Kotlin", "$i")
             total = total + i
         }
-        Log.i("Kotlin","Total is $total")
+        Log.i("Kotlin", "Total is $total")
 
         // Normal Iteration
         for (i in 1..5)
-            Log.i("Kotlin","Normal Iteration $i")
+            Log.i("Kotlin", "Normal Iteration $i")
 
         // Iterate revers
 
         for (i in 5 downTo 1)
-            Log.i("Kotlin","Reverse iteration $i")
+            Log.i("Kotlin", "Reverse iteration $i")
 
         // Iterate with step
 
         for (i in 1..5 step 2)
-            Log.i("Kotlin","Step Iteration $i")
+            Log.i("Kotlin", "Step Iteration $i")
 
         // Exclude Iteration
         for (i in 1 until 10)
-            Log.i("Kotlin","Exclude Iteration $i")
+            Log.i("Kotlin", "Exclude Iteration $i")
 
         //loop through collections
-        val collectionlist = listOf("A","B","C")
+        val collectionlist = listOf("A", "B", "C")
 
-        for (item in collectionlist){
+        for (item in collectionlist) {
 
-            Log.i("Kotlin","Item is $item")
+            Log.i("Kotlin", "Item is $item")
         }
 
         // Similar to SWift 3.0 enumerated() method
-        for ((index, item) in collectionlist.withIndex()){
+        for ((index, item) in collectionlist.withIndex()) {
 
-            Log.i("Kotlin","Item at $index is $item")
+            Log.i("Kotlin", "Item at $index is $item")
         }
 
-        val myArray = arrayOf(1,2,3,4)
-        for (i in myArray.indices){
+        val myArray = arrayOf(1, 2, 3, 4)
+        for (i in myArray.indices) {
             val item = myArray[i]
-            Log.i("Kotlin","Item is $item")
+            Log.i("Kotlin", "Item is $item")
         }
 
         //Break:- To Break out of the entire loop
@@ -255,27 +383,30 @@ class MainActivity : AppCompatActivity() {
         // While A while loop statement in Kotlin programming language repeatedly executes a target statement as long as a given condition is true.
         var index = 10
         while (index < 20) {
-            Log.i("Kotlin","Value of index is $index")
+            Log.i("Kotlin", "Value of index is $index")
             index = index + 1
         }
 
     }
 
-    fun typeCheck(a:Any,b:Any ){
+    fun typeCheck(a: Any, b: Any) {
 
         //Type Check using is and !is Operators
 
         if (a is String) {
-            Log.i("Kotlin","a is a string")
+            Log.i("Kotlin", "a is a string")
         }
         if (a !is String) {
-            Log.i("Kotlin","a is not a string")
+            Log.i("Kotlin", "a is not a string")
         }
 
         //Smart Casts
 
         if (a is String) {
-            Log.i("Kotlin","a is a string with length ${a.length}") // val gets automatically cast to String
+            Log.i(
+                "Kotlin",
+                "a is a string with length ${a.length}"
+            ) // val gets automatically cast to String
         }
 
         if (a !is String) return
@@ -283,9 +414,9 @@ class MainActivity : AppCompatActivity() {
 
         // Usage with when
         when (a) {
-            is String -> Log.i("Kotlin","(when)a is a string")
-            is Int -> Log.i("Kotlin",(a+1).toString())
-            is IntArray -> Log.i("Kotlin",a.sum().toString())
+            is String -> Log.i("Kotlin", "(when)a is a string")
+            is Int -> Log.i("Kotlin", (a + 1).toString())
+            is IntArray -> Log.i("Kotlin", a.sum().toString())
         }
 
         //Type Casting : Unsafe Cast
@@ -295,11 +426,11 @@ class MainActivity : AppCompatActivity() {
         //Type Casting : Safe Cast
 
         val d: Int? = b as? Int
-        Log.i("Kotlin",d?.toString())
+        Log.i("Kotlin", d?.toString())
 
     }
 
-    fun collections(){
+    fun collections() {
 
         // Lists
         val items = listOf(1, 2, 3, 4)
@@ -316,8 +447,8 @@ class MainActivity : AppCompatActivity() {
 
         // Array list: Mutable
 
-        val arrayList = arrayListOf("A","B","C")
-        val arrayList2 = arrayListOf("D","E","F")
+        val arrayList = arrayListOf("A", "B", "C")
+        val arrayList2 = arrayListOf("D", "E", "F")
 
         // Combine array lists
         val combined = arrayList + arrayList2
@@ -325,10 +456,10 @@ class MainActivity : AppCompatActivity() {
 
         // arraylist is mutable using the add method
         val added = arrayList.add("T")
-        if (added){
+        if (added) {
             println("Added item to arraylist")
             println("New arraylist $arrayList")
-        }else{
+        } else {
             println("Add failed")
         }
 
@@ -340,43 +471,43 @@ class MainActivity : AppCompatActivity() {
         // Remove element
         val removed = arrayList.remove("A") //Boolean response
 
-        if (removed){
+        if (removed) {
             println("removed")
             println("arraylist after removal $arrayList")
-        }else{
+        } else {
             println("remove failed")
         }
 
         // Get a sublist from an array list, provide start index and end index (end index value wont be taken)
-        val sublist = arrayList.subList(1,3)
+        val sublist = arrayList.subList(1, 3)
         println("sublist $sublist")
 
 
         // Arrays Immutable
 
-        var array = arrayOf(1,2,3,4)
-        val mixedarray = arrayOf("String",1,2,false) // Any
-        val array2 = arrayOf(5,6,7,8)
-        val numbers = intArrayOf(1,2,3,4) // Only integers are possible
+        var array = arrayOf(1, 2, 3, 4)
+        val mixedarray = arrayOf("String", 1, 2, false) // Any
+        val array2 = arrayOf(5, 6, 7, 8)
+        val numbers = intArrayOf(1, 2, 3, 4) // Only integers are possible
 
         //Combine arrays, you can combine 2 arrays of same type
         val combinedArray = array2 + array
         println(combinedArray[0])
 
-        for ((index, item) in combinedArray.withIndex()){
+        for ((index, item) in combinedArray.withIndex()) {
 
             println("Item at $index is $item")
         }
         // To check if array is empty
 
-        if (array.isEmpty()){
+        if (array.isEmpty()) {
 
             println("Array is empty")
         }
 
         // To check if array contains a particular element
 
-        if (array.contains(2)){
+        if (array.contains(2)) {
 
             println("Array contains 2")
         }
@@ -386,7 +517,7 @@ class MainActivity : AppCompatActivity() {
     //Set
     //Set doesnt accept duplicate values....set add unique values.
 
-    fun setSample(){
+    fun setSample() {
         val myCustomSet = HashSet<String>()
 
         myCustomSet.add("Hello")
@@ -400,48 +531,39 @@ class MainActivity : AppCompatActivity() {
 //
 //Extensions are used to add a new behavior to a class eventhough we donot have access to the class's source code, it is similar to extensions in Swift. Extensions can be properties also.
 
-    fun Fragment.show(message: CharSequence, duration: Int = Toast.LENGTH_SHORT){
+    fun Fragment.show(message: CharSequence, duration: Int = Toast.LENGTH_SHORT) {
         Toast.makeText(activity, message, duration).show()
     }
 }
 
 
-
-
-
-
-
-
-
-fun functions(){
+fun functions() {
 
 //    fun <functionName>(<parameter>:<dataType>):<return datatype>{
 //        return <return value>
 //    }
     // Simple function
 
-    fun hellokotlin(){
+    fun hellokotlin() {
 
         println("Hello kotlin")
     }
 
 // Function with parameters
 
-    fun sayHelloTo(name: String){
+    fun sayHelloTo(name: String) {
 
         println("Hello" + name)
     }
 
 // Function accepts parameters and returns String
 
-    fun contructStringFrom(firstName:String, lastName:String):String{
+    fun contructStringFrom(firstName: String, lastName: String): String {
 
         return firstName + lastName
     }
 
 }
-
-
 
 
 //Class
@@ -471,11 +593,12 @@ fun functions(){
 //
 //}
 
-open class  Vehicle (open val color:String, open var numberofWheels: Int){
+open class Vehicle(open val color: String, open var numberofWheels: Int) {
 
 }
 
-class Car(override val color:String, override var numberofWheels: Int):Vehicle(color, numberofWheels){
+class Car(override val color: String, override var numberofWheels: Int) :
+    Vehicle(color, numberofWheels) {
 
 }
 //Abstract Classes and Methods
@@ -487,63 +610,67 @@ class Car(override val color:String, override var numberofWheels: Int):Vehicle(c
 //Abstract methods are used when there is different implementation of the parent class method in the child class, so in the parent class only the declaration will be made and the child classes should implement the method.
 
 
-abstract class Vehicle1(open val color:String,open var numberOfWheels:Int){
+abstract class Vehicle1(open val color: String, open var numberOfWheels: Int) {
 
     open var whoAMI = "I am a vehicle"
-    abstract var modelName:String
+    abstract var modelName: String
 
     abstract fun startEngine()
 }
 
-class Car1(override val color: String, override var numberOfWheels: Int):Vehicle1(color, numberOfWheels){
+class Car1(override val color: String, override var numberOfWheels: Int) :
+    Vehicle1(color, numberOfWheels) {
     override var modelName: String = "BMW123"
 
     override var whoAMI: String = "I am a Car"
 
     override fun startEngine() {
 
-        Log.i("Kotlin","Starting a Car")
+        Log.i("Kotlin", "Starting a Car")
     }
 
 
 }
 
-class Bike1(override val color: String, override var numberOfWheels: Int):Vehicle1(color, numberOfWheels){
+class Bike1(override val color: String, override var numberOfWheels: Int) :
+    Vehicle1(color, numberOfWheels) {
     override var modelName: String = "DUKE123"
     override fun startEngine() {
 
-        Log.i("Kotlin","Starting a Bike")
+        Log.i("Kotlin", "Starting a Bike")
     }
 
 }
 
 //Interface
 //
-//Interface defines a contract which the adhering classes should implement, its like protocols in Swift. Interfaces can be extended also like protocol extensions, they can contain abstract methods as well as method implementations. Properties can be declared in Interface but they need to abstact or can provide implementation for accessors. Interfaces cannot store state
+//Interface defines a contract which the adhering classes should implement, its like protocols in Swift. Interfaces can be extended also like protocol extensions, they can contain abstract methods as well as method implementations. Properties can be declared in Interface but they need to abstact or can provide implementation for accessors.
+// Interfaces cannot store state, Interface cannot have constructors
 
 
-interface Movable{
+interface Movable {
 
-    var modelNumber:String
+    var modelNumber: String
     fun startEngine()
 }
 
-class Car2( val color: String, var numberOfWheels: Int):Movable{
+class Car2(val color: String, var numberOfWheels: Int) : Movable {
     override var modelNumber = "BMW123"
 
 
     override fun startEngine() {
-        Log.i("Kotlin","Starting a Movable Car")
+        Log.i("Kotlin", "Starting a Movable Car")
     }
 
 
 }
-class Bike2( val color: String, var numberOfWheels: Int):Movable{
+
+class Bike2(val color: String, var numberOfWheels: Int) : Movable {
     override var modelNumber: String = "DUKE123"
 
 
     override fun startEngine() {
-        Log.i("Kotlin","Starting a Movable Bike")
+        Log.i("Kotlin", "Starting a Movable Bike")
     }
 
 }
@@ -553,35 +680,69 @@ class Bike2( val color: String, var numberOfWheels: Int):Movable{
 //
 //If you have a common functionality which need to handle multiple data types, we use generics.
 
-class Generic<E>(t:E){
+class Generic<E>(t: E) {
 
     val content = t
 
 
 }
+
 class Bus {
-    fun startBus(){
+    fun startBus() {
 
-        Log.i("Kotlin","Started")
-    }
-    fun stopBus(){
-        Log.i("Kotlin","Stopped")
-
+        Log.i("Kotlin", "Started")
     }
 
-    fun turnRight(){
-        Log.i("Kotlin","Turning Right")
+    fun stopBus() {
+        Log.i("Kotlin", "Stopped")
+
     }
-    fun turnLeft(){
-        Log.i("Kotlin","Turning Left")
+
+    fun turnRight() {
+        Log.i("Kotlin", "Turning Right")
+    }
+
+    fun turnLeft() {
+        Log.i("Kotlin", "Turning Left")
     }
 }
 
 val myBus = Bus()
 
 
+fun createSpice(){
+    val spice = SimpleSpice()
 
+    spice.spiceName = "Curry"
+    spice.spiciness = "mild"
 
+    print("${spice.spiceName}, ${spice.heat} ")
+}
+
+// Enum
+enum class Color(val rgb: Int) {
+    RED(0xFF0000), GREEN(0x00FF00), BLUE(0x0000FF),YELLOW(0xFFFF00);
+}
+interface SpiceColor {
+    val color: Color
+}
+
+object YellowSpiceColor : SpiceColor {
+    override val color = Color.YELLOW
+}
+
+class Student(val firstName: String,val lastName: String, val age:Int ){
+
+    fun getFirstAndLastName():Pair<String, String>{
+
+        return firstName to lastName
+    }
+
+    fun getStudentFullDetails():Triple<String, String, Int>{
+
+        return Triple(firstName, lastName, age)
+    }
+}
 
 
 
